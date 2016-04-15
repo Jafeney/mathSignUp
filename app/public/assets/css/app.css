@@ -1,0 +1,128 @@
+/* Write your styles */
+
+.app_font_23{
+	font-size: 23px;
+}
+.app_text_indent_2{
+	text-indent: 2em;
+}
+
+/*头部和尾部公共部分*/
+.logo {
+	width: 42px;
+	height: auto;
+	margin-right: 10px;
+	position: relative;
+	top: -2px;
+}
+.app_sub_title{
+	padding: 40px 5% 20px 10%;
+	background: linear-gradient(180deg, #020031 0px, #6D3353 100%) repeat scroll 0% 0% transparent;
+	background: #6D3353\9;
+	color: #fff;
+}
+.app_sub_title_h1{
+	color: #f0f0f0;
+	font-weight: 100;
+	font-size: 30px;
+}
+.app_sub_title_p{
+	color: #f0f0f0;
+	
+}
+.detail {
+	background: #fff;
+}
+.detail-h2 {
+	text-align: center;
+	font-size: 180%;
+	margin: 40px 0;
+}
+.detail-h3 {
+	color: #1f8dd6;
+}
+.detail-p {
+	color: #7f8c8d;
+}
+.detail-mb {
+	margin-bottom: 30px;
+}
+.app-content-body{
+	margin-top: 15px;
+}
+.app-content-body h3{
+	margin:5px;
+}
+.app-content-body p{
+	text-indent: 2em;
+	font-size: 14px;
+	padding: 3px 0px;
+	margin: 0;
+}
+.app-content-body strong{
+	color: #F37B1D;
+}
+.app-content-body ul{
+	padding-left: 30px;
+	margin: 0;
+	margin-top:8px;
+	font-size: 14px;
+}
+.app-content-body ol{
+	padding-left: 30px;
+	margin: 0;
+	margin-top:8px;
+	font-size: 14px;
+}
+.app-content-body h4{
+	font-size: 14px;
+	color: #009CDA;
+}
+.app-content-body hr{
+	padding: 0px 0px 5px 0px ;
+	margin: 0;
+}
+.app-content-body-title{
+	background-color: #0084C7;
+	padding: 1px 1px;
+}
+.footer {
+	width: 100%;
+	background: #2d3e50;
+}
+.footer p {
+	color: #7f8c8d;
+	margin: 0;
+	padding: 15px 0;
+	text-align: center;
+	background: #2d3e50;
+	width: 992px\9;
+	margin: 0 auto;
+}
+.am-popover{
+	font-size: 12px;
+	margin-top: 10px;
+}
+@media only screen and (min-width: 100px) and (max-width: 640px) {
+	.web_title {
+		font-size: 16px;
+	}
+	.change-lg-top-1{
+		margin-top: -50px;
+	}
+	.change-lg-top {
+		margin-top: 0px;
+	}
+
+	.hope-title{
+		position: relative;
+		top: -25px;
+	}
+	.logo{
+		width: 30px;
+		margin-right: 5px;
+	}
+	#scroll_container{
+		display: none;
+	}
+}
