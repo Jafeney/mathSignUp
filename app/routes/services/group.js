@@ -171,6 +171,7 @@ var Group = {
                     newItem.school = item.school;
                     newItem.group = item.group;
                     newItem.teacher = item.teacher;
+                    newItem.teacher_phone = item.teacher_phone;
                     newItem.uptime = item.uptime;
                     newItem.name = aa.name;
                     newItem.role = aa.role;

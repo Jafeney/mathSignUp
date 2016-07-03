@@ -105,7 +105,17 @@
 								</div>
 								<div id="do-not-say-3" class="am-panel-collapse am-collapse am-in">
 									<div class="am-panel-bd">
-										根据全国组委会通知精神，各校报名参加2016年竞赛的队数上限不作统一规定。请各参赛院校于5月10日前寄送“2016年中国大学生医药数学建模竞赛参赛信息表”（见附件二）（纸质文本，需加盖公章），并登陆中国大学生医药数学建模竞赛网站（http://nmcmm.wmu.edu.cn/）进行参赛队数网上确认，若学校竞赛负责人信息有变更，请及时修改。请各参赛院校于<strong>5月10日前将本校参赛学生信息录入到中国大学生医药数学建模竞赛网的报名信息录入系统</strong>,逾期不再受理报名也不能更改报名信息。
+
+										<p>
+											本系统由中国大学生医药数学建模协会监制，请按照要求填写队伍和队员信息，并遵循以下要求：<br/>
+											<br/>
+											1. 每次只能录入一个队伍的信息，请认真填写每个队伍的所有成员的具体内容。<br/>
+											2. 每个队伍可以由1～3人组成，有且只有一名队长，其余均为队员。<br/>
+											3. 每个队伍原则上只能提交一次，如需多次提交请在队员信息里添加备注，以您最终提交内容为准。<br/>
+											4. 带＊的为必须填写的内容。<br/>
+											5. 每次成功提交后，上一次的提交记录会保留，您可以在此基础上修改以添加下一个队伍的信息。<br/>
+										</p>
+
 									</div>
 								</div>
 							</div>
@@ -135,6 +145,13 @@
 										    	<label for="J_teacher" class="am-u-sm-2 am-form-label">*指导老师</label>
 										    	<div class="am-u-sm-10">
 										      		<input type="text" id="J_teacher" style="font-size:12px;" placeholder="输入您所在组的参赛组别">
+										    	</div>
+										  	</div>
+
+											<div class="am-form-group">
+										    	<label for="J_group" class="am-u-sm-2 am-form-label">*该老师手机号</label>
+										    	<div class="am-u-sm-10">
+										      		<input type="text" id="J_teacher_phone" style="font-size:12px;" placeholder="输入您所在组的指导老师的手机号码">
 										    	</div>
 										  	</div>
 
@@ -336,6 +353,7 @@
 								school: $('#J_school').val(),
 								group: $('#J_group').val(),
 								teacher: $('#J_teacher').val(),
+								teacher_phone: $('#J_teacher_phone').val(),
 								items: []
 							};
 							var _names = $('.J_group-name'),
@@ -367,18 +385,29 @@
 							if (checkEmpty(data)) {
 								// 检查是否设置了队长
 								if (checkHasLeader(data)) {
-									$.ajax({
-										url: '/group/add',
-										type: 'POST',
-										dataType: 'json',
-										data: data,
-										success: function(res) {
-											if (res.status) {
-												alert(res.message);
-											} else {
-												alert('信息录入失败！请重试');
-											}
-										}
+
+									$('#all_operate').empty();
+									JafeneyComfirm("温馨提示", "您确定已正确录入该队所有成员的信息吗？");
+									$('#JafeneyComfirm').modal({
+										relatedTarget: this,
+								        onConfirm: function(options) {
+											$.ajax({
+												url: '/group/add',
+												type: 'POST',
+												dataType: 'json',
+												data: data,
+												success: function(res) {
+													if (res.status) {
+														alert(res.message);
+													} else {
+														alert('信息录入失败！请重试');
+													}
+												}
+											});
+								        },
+								        onCancel: function() {
+								          //什么都不做
+								        }
 									});
 								}
 							};
@@ -397,19 +426,16 @@
 								return false;
 							} else if(data.items.length) {
 								var finish = false;
-								var res = data.items.forEach(function(item, i) {
+
+								for(var i=0,len=data.items.length;i<len;i++) {
+									var item = data.items[i];
 									for (var aa in item) {
 										if (!item[aa] && aa!= 'note') {
 											alert(mapItemName(aa.toString()) + "不能为空！");
 											$('.J_group-' + aa.toString()).eq(i).focus();
-											finish = true;
 											return false;
 										}
 									}
-									finish = true;
-								});
-								if (finish) {
-									return true;
 								}
 							}
 						}
