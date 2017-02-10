@@ -11,7 +11,7 @@ var nodeModulesPath = path.join(__dirname, '/node_modules');
 module.exports = {
     entry: {
         admin: './src/entries/admin.entry',
-        front: './src/entries/school.entry',
+        signup: './src/entries/signup.entry',
         // 作为外部模块,不打包到webpack的主文件
         vendor: ['react', 'react-dom', 'redux'],
     },

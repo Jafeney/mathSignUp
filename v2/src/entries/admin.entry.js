@@ -11,7 +11,7 @@ import { Provider } from 'react-redux'
 // router
 import { Router, hashHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
-import routes from '../routes/admin.entry'
+import routes from '../routes/admin.route'
 import configureStore from '../redux/configureStore'
 
 const store = configureStore(hashHistory)

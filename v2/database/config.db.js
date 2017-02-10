@@ -7,7 +7,7 @@ var config = {
     port: 3306,
     user: 'root',
     password: '5566521okOK',
-    database: 'math_signUp',
+    database: 'mathSignUp',
 };
 
 module.exports = config;

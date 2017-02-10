@@ -5,3 +5,5 @@
  **/
 
 export request from './request.reducer'
+export { user, users } from './user.reducer'
+export { members } from './member.reducer'

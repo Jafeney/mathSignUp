@@ -34,6 +34,7 @@ export function request(route, params, dispatch, success=null, error=null, { met
                 success && success(res.data)
             } else {
                 if (res.code === 400) {
+                    error && error(res.message)
                     // dispatch({ type: TYPES.LOGGED_OUT })
                 } else {
                     // dispatch({ type: TYPES.REQUEST_ERROR, ...data })

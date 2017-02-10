@@ -1,0 +1,110 @@
+/**
+ * @desc 弹出层样式
+ **/
+
+ .btn() {
+     cursor: pointer;
+     user-select: none;
+     -webkit-user-select: none;
+     -moz-user-select: none;
+     -ms-user-select: none;
+     -o-user-select: none;
+
+     transition: all 0.3s ease;
+     -webkit-transition: all 0.3s ease;
+     -moz-transition: all 0.3s ease;
+     -ms-transition: all 0.3s ease;
+
+     &:hover {
+         opacity: .8;
+     }
+
+     &.disabled {
+         &:hover {
+             opacity: 1;
+             cursor: not-allowed;
+         }
+     }
+ }
+
+.ry-mask {
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,.5);
+    display: none;
+
+
+    &.show {
+        display: block;
+    }
+
+    .ry-popup {
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        border: 3px solid #5190DA;
+        background: #fff;
+
+        .title {
+            height: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #4A4A4A;
+            padding: 15px;
+        }
+
+        .title-content {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+        }
+
+        .closed {
+            width: 12px;
+            height: 12px;
+            float: right;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAaZJREFUSA2tlUlOw0AQRQ0cgRViSDOcgOFCSNwAiT0L4FrM05IVk3BWbLkBvBfcSaedwTiU9JN2d9WvX+WyvVAUxSo4Al/gE/yHBUj2QQmKQ/ANSrALZrV1CB6BnMeSbYK48cJ6x82W1iHuHEjeBXugZ2a9BPGgTRI5HioOhda6ERKHV9Z/SaLyCxAF1sg561ng9wroWIImSVR+D4xpJCxkAWPV4LcGYmtL1pN8OR6YJV+DWMmoQJXfVT5v/DepFreB5QRpEpWnrexPyyC82UqiG2AlzyAAH8xb4F4r5cQNWVqJxJH8iXVr5UMZuFgCsd8qd+3eVJuf6vHrsJj5mWQu22t96c39AJLanjjzVhHATOboeSNjW1ZYb4H3as8BcBBaWarckUyJPEsTh79mSJXbEicpN5OUwOp8KDugkaWBufKcIK1EISF3yK9V7qtWVeOU5zEm6VYxvpcCGGm5Y+OSYTPWN2kUVotNlfvRGNVztieaHLESvw19jlS5B7XsE2mHD+WKLVaoI12cAUvzu9zPyrqtpYJPJVkGB2AW5fKkts3FCdj4AZbHfcYyVIOYAAAAAElFTkSuQmCC) no-repeat center center;
+            background-size: 15px;
+        }
+
+        .footer {
+            font-size: 0;
+            text-align: center;
+            padding-top: 25px;
+            margin-bottom: 20px;
+
+            .btn-confirm {
+                display: inline-block;
+                vertical-align: top;
+                width: 80px;
+                height: 30px;
+                font-size: 12px;
+                text-align: center;
+                color: #fff;
+                line-height: 30px;
+                background: #1B65BD;
+                margin-right: 15px;
+                .btn();
+            }
+
+            .btn-cancel {
+                display: inline-block;
+                vertical-align: top;
+                width: 80px;
+                height: 30px;
+                font-size: 12px;
+                text-align: center;
+                line-height: 30px;
+                color: #4A4A4A;
+                background: #DEDEDE;
+                .btn();
+            }
+        }
+    }
+}

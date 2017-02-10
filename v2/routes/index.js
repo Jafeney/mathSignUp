@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', {});
+  res.render('index', {title: '中国大学生医药数学建模报名系统'});
 });
 
 /* GET admin page. */

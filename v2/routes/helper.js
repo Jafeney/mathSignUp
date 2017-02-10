@@ -56,9 +56,9 @@ var helper = {
     db_query: function(opt) {
         opt.connect.query(opt.sql, function(err, res) {
     		if (err) {
-    			console.log(`${opt.name} err: + ${err}`);
+    			console.error(`${opt.name} err: + ${err}`);
     		} else {
-    			console.log(`${opt.name} success!`);
+    			console.info(`${opt.name} success!`);
     			if (typeof(opt.callback) === 'function') {
     				opt.callback(err, res);
     			}

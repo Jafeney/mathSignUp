@@ -1,7 +1,19 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+// var logger = require('morgan'); // 默认日志
+
+var log4js = require('log4js'); // log4js日志系统
+// 配置生产环境的日志系统
+log4js.configure({
+    appenders: [
+        { type: 'console' },
+        { type: 'file', filename: 'cheese.log', maxLogSize: 2048000, category: 'cheese' }
+    ]
+});
+var logger = log4js.getLogger('cheese');
+logger.setLevel('INFO');
+
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
@@ -16,7 +28,8 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+// app.use(logger('dev'));
+app.use(log4js.connectLogger(logger, { level: log4js.levels.INFO }))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());

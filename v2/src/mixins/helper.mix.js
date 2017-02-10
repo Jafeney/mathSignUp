@@ -23,3 +23,18 @@ export function parseURL(url) {
 export function limitStringlength(str, length) {
     return str.substr(0, length) + '...'
 }
+
+export function mapTypetoCategory(type) {
+    switch (type) {
+        case 100:
+            return '医学本科组';
+        case 200:
+            return '医学专科组';
+        case 300:
+            return '非医学本科组';
+        case 400:
+            return '非医学专科组';
+        default:
+            return '其他组别';
+    }
+}
