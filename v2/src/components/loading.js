@@ -20,18 +20,39 @@ class Loading extends Component {
 
     constructor(props) {
         super(props)
+        this.state = {
+            hide: false || props.show
+        }
+    }
+
+    close() {
+        this.setState({
+            hide: true
+        })
+    }
+
+    show() {
+        this.setState({
+            hide: false
+        })
     }
 
     render() {
-        return (
-            <div style={mask}>
-                <div className="cssload-loader">
-                    <div className="cssload-inner cssload-one"></div>
-                    <div className="cssload-inner cssload-two"></div>
-                    <div className="cssload-inner cssload-three"></div>
+        if (!this.state.hide){
+            return (
+                <div style={mask}>
+                    <div className="cssload-loader">
+                        <div className="cssload-inner cssload-one"></div>
+                        <div className="cssload-inner cssload-two"></div>
+                        <div className="cssload-inner cssload-three"></div>
+                    </div>
                 </div>
-            </div>
-        )
+            )
+        } else {
+            return (
+                <div></div>
+            )
+        }
     }
 }
 

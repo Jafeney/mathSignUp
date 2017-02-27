@@ -22,6 +22,12 @@ class Pagination extends Component {
         }
     }
 
+    pageInit() {
+        this.setState({
+            current: 1
+        })
+    }
+
     _renderPaginate(current) {
         var totalPage = this.props.totalPage;
         var pageSpace = this.props.pageSpace || 2;

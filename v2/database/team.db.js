@@ -37,4 +37,15 @@ Team.prototype.getItemById = function(callback) {
     })
 }
 
+/*添加队伍*/
+Team.prototype.addItem = function(callback) {
+    var _sql = `insert into team (t_type,t_teacher,t_teacher_phone,u_id) values (${this.props.category},'${this.props.teacher}','${this.props.t_phone}',${this.props.u_id})`;
+    helper.db_query({
+        connect: con,
+        sql: _sql,
+        name: 'addItem',
+        callback: callback
+    })
+}
+
 module.exports = Team

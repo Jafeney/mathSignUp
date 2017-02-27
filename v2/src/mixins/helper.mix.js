@@ -25,7 +25,7 @@ export function limitStringlength(str, length) {
 }
 
 export function mapTypetoCategory(type) {
-    switch (type) {
+    switch (parseInt(type)) {
         case 100:
             return '医学本科组';
         case 200:

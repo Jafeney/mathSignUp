@@ -73,6 +73,7 @@ class Main extends Component {
     }
 
     handleChangePwd() {
+        this.refs.loading.show()
         if ((this.state.newPwd === this.state.rePwd)
             && (/^[0-9A-Za-z]{6,20}$/.test(this.state.newPwd))
             && this.state.oldPwd && !this.state.oldFail) {
@@ -80,8 +81,11 @@ class Main extends Component {
             this.props.actions.changePassword({
                 body: body,
                 success: () => {
-                    this.refs.change.close()
-                    this.refs.tips.show()
+                    setTimeout(()=>{
+                        this.refs.loading.close()
+                        this.refs.change.close()
+                        this.refs.tips.show()
+                    }, 500)
                 },
                 fail: () => {
                     this.refs.change.close()
@@ -161,6 +165,7 @@ class Main extends Component {
                 <Popup ref="tips" title="温馨提示" hideFooter={true} width="550px" height="120px">
                     <p style={{color: '#666',marginLeft: '15px',fontSize:'12px'}}>恭喜！您的密码已成功修改</p>
                 </Popup>
+                <Loading show={true} ref="loading" />
             </div>
         )
     }

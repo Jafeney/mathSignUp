@@ -50,7 +50,8 @@ Member.prototype.deleteItemById = function(callback) {
 
 /*编辑成员信息*/
 Member.prototype.putItemById = function(callback) {
-    var _sql = `update member set m_name='${this.props.name}',m_IDCard='${this.props.IDCard}',m_code='${this.props.code}',m_college='${this.props.college}',m_major='${this.props.major}',m_grade='${this.props.grade}',m_phone='${this.props.phone}',m_email='${this.props.email}',m_leader=${this.props.isLeader}`;
+    var _sql = `update member set m_name='${this.props.name}',m_IDCard='${this.props.IDCard}',m_code='${this.props.code}',m_college='${this.props.college}',m_major='${this.props.major}',m_grade='${this.props.grade}',m_phone='${this.props.phone}',m_email='${this.props.email}',m_leader=${this.props.isLeader} where m_id=${this.props.id}`;
+    console.log(_sql)
     helper.db_query({
         connect: con,
         sql: _sql,
@@ -58,5 +59,34 @@ Member.prototype.putItemById = function(callback) {
         callback: callback
     })
 }
+
+/*添加成员*/
+Member.prototype.addItemByTeam = function(callback) {
+    var tid = this.props.tid;
+    var promises = this.props.items.map(function(item) {
+        insertItem(item, tid)
+    });
+    Promise.all(promises)
+        .then(function(data) {
+            callback && callback(data)
+        })
+        .catch(function(err) {
+            console.log(err)
+        })
+}
+
+var insertItem = function(data,tid) {
+    return new Promise(function(resolve, reject) {
+        var _sql = `insert into member (m_name, m_IDCard, m_code, m_college, m_major, m_grade, m_phone, m_email, t_id, m_leader) values ('${data.name}','${data.IDCard}', '${data.code}', '${data.college}','${data.major}','${data.grade}','${data.phone}','${data.email}',${tid},${data.isLeader || 0})`;
+        con.query(_sql, function(err, res) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(res)
+            }
+        });
+    })
+}
+
 
 module.exports = Member

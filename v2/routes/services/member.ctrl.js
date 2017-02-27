@@ -3,7 +3,8 @@
  * @author Jafeney
  * @dateTime 2017-01-24
  **/
-
+var json2xls = require('json2xls');
+var fs = require('fs');
 var Member = require('../../database/member.db');
 var Team = require('../../database/team.db');
 var Helper = require('../helper');
@@ -15,6 +16,7 @@ module.exports = {
         app.post('/members/uid', this.postAllItemsById)
         app.post('/member/delete', this.deleteItemById)
         app.post('/member/put', this.putItemById)
+        app.post('/member/xls', this.exportExcel)
     },
 
     // 获取所有成员的所有信息
@@ -95,5 +97,24 @@ module.exports = {
                 })
             }
         })
+    },
+
+    // 导出json数据到excel
+    exportExcel: function(req, res) {
+        var source = JSON.parse(req.body.source);
+        try {
+            // 生成excel
+            var xls = json2xls(source);
+            fs.writeFileSync('./public/data.xlsx', xls, 'binary');
+            return res.send({
+                code: 200,
+                data: []
+            });
+        } catch(e) {
+            return res.send({
+                code: 500,
+                message: '导出失败！'
+            });
+        }
     }
 }

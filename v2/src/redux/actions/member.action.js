@@ -71,3 +71,21 @@ export function editMember(opt) {
             body: bodyUrlencoded(opt.body) })
     }
 }
+
+export function signup(opt) {
+    return (dispatch) => {
+        const route = '/api/signup';
+        request(route, {}, dispatch, opt.success, opt.error, { method: 'POST',
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: bodyUrlencoded(opt.body) })
+    }
+}
+
+export function exportExcel(opt) {
+    return (dispatch) => {
+        const route = '/api/member/xls';
+        request(route, {}, dispatch, opt.success, opt.error, { method: 'POST',
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: bodyUrlencoded(opt.body) })
+    }
+}

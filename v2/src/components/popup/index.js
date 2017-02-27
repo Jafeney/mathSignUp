@@ -14,6 +14,7 @@ class Popup extends Component {
         this.state = {
             show: false,
             hideFooter: props.hideFooter || false,
+            height: props.height
         }
     }
 
@@ -35,6 +36,12 @@ class Popup extends Component {
         } else {
             this.close()
         }
+    }
+
+    setHeight(height) {
+        this.setState({
+            height: height
+        })
     }
 
     _renderTitle() {
@@ -74,7 +81,7 @@ class Popup extends Component {
     render() {
         return (
             <div className={this.state.show?"ry-mask show":"ry-mask"}>
-                <div className="ry-popup" style={{width: this.props.width, height: this.props.height}}>
+                <div className="ry-popup" style={{width: this.props.width, height: this.state.height}}>
                     { this._renderTitle() }
                     { this._renderContent() }
                     { this._renderFooter() }
