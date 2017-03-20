@@ -63,11 +63,15 @@ module.exports = {
     deleteItemById: function(req, res) {
         var props = req.body;
         var member = new Member({props: props});
+        var team = new Team({props: props});
         member.deleteItemById(function(err, data) {
             if (!err) {
-                return res.send({
-                    code: 200,
-                    data: data,
+                team.removeItemById(function(_err, _data) {
+                    if (!_err) {
+                        return res.send({
+                            code: 200,
+                        })
+                    }
                 })
             } else {
                 err && console.log(err)

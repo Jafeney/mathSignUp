@@ -39,11 +39,22 @@ Team.prototype.getItemById = function(callback) {
 
 /*添加队伍*/
 Team.prototype.addItem = function(callback) {
-    var _sql = `insert into team (t_type,t_teacher,t_teacher_phone,u_id) values (${this.props.category},'${this.props.teacher}','${this.props.t_phone}',${this.props.u_id})`;
+    var _sql = `insert into team (t_type,t_teacher,t_teacher_phone,u_id,t_time) values (${this.props.category},'${this.props.teacher}','${this.props.t_phone}',${this.props.u_id}, NOW())`;
     helper.db_query({
         connect: con,
         sql: _sql,
         name: 'addItem',
+        callback: callback
+    })
+}
+
+/*删除队伍*/
+Team.prototype.removeItemById = function(callback) {
+    var _sql = `update team set t_del = 1 where t_id=${this.props.id}`;
+    helper.db_query({
+        connect: con,
+        sql: _sql,
+        name: 'removeItem',
         callback: callback
     })
 }

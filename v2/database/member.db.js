@@ -17,7 +17,7 @@ var Member = function(member) {
 
 /*获取全部数据,正式上线时请关闭*/
 Member.prototype.getAllItems = function(callback) {
-    var _sql = `select * from member,team where member.t_id=team.t_id and m_del=0`;
+    var _sql = `select * from member, team where member.t_id=team.t_id and m_del=0`;
     helper.db_query({
         connect: con,
         sql: _sql,
@@ -28,7 +28,7 @@ Member.prototype.getAllItems = function(callback) {
 
 /*获取全部数据,正式上线时请关闭*/
 Member.prototype.getAllItemsById = function(callback) {
-    var _sql = `select * from member,team where member.t_id=team.t_id and m_del=0 and team.u_id = ${this.props.id}`;
+    var _sql = `select * from member, team where member.t_id=team.t_id and member.m_del=0 and team.t_del=0 and team.u_id = ${this.props.id}`;
     helper.db_query({
         connect: con,
         sql: _sql,
@@ -39,7 +39,7 @@ Member.prototype.getAllItemsById = function(callback) {
 
 /*删除成员*/
 Member.prototype.deleteItemById = function(callback) {
-    var _sql = `update member set m_del = 1 where m_id = ${this.props.id}`;
+    var _sql = `update member set m_del = 1 where t_id = ${this.props.id}`;
     helper.db_query({
         connect: con,
         sql: _sql,
@@ -51,7 +51,6 @@ Member.prototype.deleteItemById = function(callback) {
 /*编辑成员信息*/
 Member.prototype.putItemById = function(callback) {
     var _sql = `update member set m_name='${this.props.name}',m_IDCard='${this.props.IDCard}',m_code='${this.props.code}',m_college='${this.props.college}',m_major='${this.props.major}',m_grade='${this.props.grade}',m_phone='${this.props.phone}',m_email='${this.props.email}',m_leader=${this.props.isLeader} where m_id=${this.props.id}`;
-    console.log(_sql)
     helper.db_query({
         connect: con,
         sql: _sql,

@@ -92,16 +92,17 @@ class Login extends Component {
                                 <span>登录账号</span>
                             </div>
                         </div>
-                        <p onClick={()=>this.handleShowModel()} className="forget">忘记密码？</p>
+                        {/* <p onClick={()=>this.handleShowModel()} className="forget">忘记密码？</p> */}
+                        <p style={{color: '#ccc', padding: '5px 20px', fontSize: '12px'}}>初始登录密码：121212</p>
                     </div>
                 </div>
-                <Popup ref="popup" title="忘记密码" width="635px" height='300px'>
+                {/* <Popup ref="popup" title="忘记密码" width="635px" height='300px'>
                     <div className="content-box">
                         <p>我们提供以下2种方式帮您找回密码：</p>
                         <p>1. 请直接电话联系管理员 15968810223</p>
                         <p>2. 发送邮件 “您的学校名称+忘记密码” 至 692270687@qq.com</p>
                     </div>
-                </Popup>
+                </Popup> */}
                 <Popup ref="tips" title="温馨提示" hideFooter={true} width="550px" height="120px">
                     <p style={{color: '#666',marginLeft: '15px',fontSize:'12px'}}>用户名或者密码不正确！</p>
                 </Popup>

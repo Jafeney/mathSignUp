@@ -30,17 +30,12 @@ class Signup extends Component {
                 category: 100,
                 teacher: '',
                 t_phone: '',
-                items: [],
+                items: [
+                    {name: '', major: '', IDCard: '', grade: '', code: '', phone: '', college: '', email: ''},
+                    {name: '', major: '', IDCard: '', grade: '', code: '', phone: '', college: '', email: ''},
+                ],
             }
         }
-        this.formHead = {
-            u_id: this.props.user.get('u_id'),
-            school: props.user.get('u_name'),
-            category: 100,
-            teacher: '',
-            t_phone: ''
-        }
-        this.formItems = [{},{},{}]
     }
 
     handleAddItem() {
@@ -49,34 +44,17 @@ class Signup extends Component {
             this.refs.add.show()
         } else {
             tabs.push([`队员${length}`,`part${length}`])
+            let formItems = this.state.form.items;
+            formItems.push({name: '', major: '', IDCard: '', grade: '', code: '', phone: '', college: '', email: ''})
             this.setState({
                 tabs: tabs,
-                actived: tabs[tabs.length-1][1]
+                actived: tabs[tabs.length-1][1],
+                form: {
+                    ...this.state.form,
+                    items: formItems
+                }
             })
         }
-    }
-
-    handleInit() {
-        this.setState({
-            tabs: [['队长','lead'], ['队员1','part1']],
-            actived: 'lead',
-            form: {
-                u_id: this.props.user.get('u_id'),
-                school: this.props.user.get('u_name'),
-                category: 100,
-                teacher: '',
-                t_phone: '',
-                items: [],
-            }
-        })
-        this.formHead = {
-            u_id: this.props.user.get('u_id'),
-            school: this.props.user.get('u_name'),
-            category: 100,
-            teacher: '',
-            t_phone: ''
-        }
-        this.formItems = [{},{},{}]
     }
 
     handleRemoveItem(part, i) {
@@ -85,21 +63,39 @@ class Signup extends Component {
         } else {
             let tabs = this.state.tabs.filter((item)=>item[1]!==part);
             if (tabs.length === 2) { tabs[1] = ['队员1','part1'] }
-            this.formItems[i] = {}
+            let formItems = this.state.form.items.filter((item, j)=>j!==i)
             this.setState({
                 tabs: tabs,
-                actived: tabs[tabs.length-1][1]
+                actived: tabs[tabs.length-1][1],
+                form: {
+                    ...this.state.form,
+                    items: formItems
+                }
             })
         }
     }
 
-    handleConfirm() {
-        this.setState({
-            form: {...this.formHead, items: this.formItems}
-        }, ()=>{
-            this.refs.submit.setHeight(this.state.tabs.length*150 + 200)
-            this.refs.submit.show()
+    handleValidate() {
+        let _form = Object.entries(this.state.form), result = true
+        _form.forEach((item) => {
+            if (!item[1]) result = false
         })
+        _form[5][1].forEach((item) => {
+            let _item = Object.entries(item)
+            _item.forEach((i) => {
+                if (!i[1]) result = false
+            })
+        })
+        return result
+    }
+
+    handleConfirm() {
+        if (this.handleValidate()) {
+            this.refs.submit.setHeight((this.state.form.items.length)*152 + 250)
+            this.refs.submit.show()
+        } else {
+            this.refs.validate.show()
+        }
     }
 
     handleSubmit() {
@@ -107,12 +103,24 @@ class Signup extends Component {
         this.props.actions.signup({
             body: { ...this.state.form, items: JSON.stringify(this.state.form.items)},
             success: (data) => {
-                setTimeout(()=>{
-                    this.refs.submit.close()
-                    this.refs.tips.show()
-                    this.handleInit()
-                    this.refs.loading.close()
-                }, 500)
+                this.refs.submit.close()
+                this.refs.loading.close()
+                this.refs.tips.show()
+                this.setState({
+                    tabs: [['队长','lead'], ['队员1','part1']],
+                    actived: 'lead',
+                    form: {
+                        u_id: this.props.user.get('u_id'),
+                        school: this.props.user.get('u_name'),
+                        category: 100,
+                        teacher: '',
+                        t_phone: '',
+                        items: [
+                            {name: '', major: '', IDCard: '', grade: '', code: '', phone: '', college: '', email: ''},
+                            {name: '', major: '', IDCard: '', grade: '', code: '', phone: '', college: '', email: ''},
+                        ],
+                    }
+                })
             },
             error: (message) => {
                 this.refs.submit.close()
@@ -145,8 +153,16 @@ class Signup extends Component {
         })
     }
 
+    handleChangeValue(i, key, value) {
+        let _items = this.state.form.items;
+        _items[i][key] = value
+        this.setState({
+            form: {...this.state.form, items: _items}
+        })
+    }
+
     __renderTabList() {
-        let { memberItems } = this.state;
+        let formItems = this.state.form.items;
         return this.state.tabs.map((item, i) => {
             return (
                 <li className={this.state.actived === item[1]?'active':''}>
@@ -154,48 +170,48 @@ class Signup extends Component {
                     <div className="row">
                         <div className="col">
                             <span>真实姓名：</span>
-                            <input type="text" onChange={(e)=>this.formItems[i].name=e.target.value} placeholder="请输入队员的真实姓名" className="input-text"/>
+                            <input type="text" value={formItems[i].name} onChange={(e)=> this.handleChangeValue(i, 'name', e.target.value)} placeholder="请输入队员的真实姓名" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                         <div className="col">
                             <span>专业全称：</span>
-                            <input type="text" onChange={(e)=>this.formItems[i].major=e.target.value} placeholder="请输入队员所在专业的全称" className="input-text"/>
+                            <input type="text" value={formItems[i].major} onChange={(e)=> this.handleChangeValue(i, 'major', e.target.value)} placeholder="请输入队员所在专业的全称" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col">
                             <span>身份证号：</span>
-                            <input type="text" onChange={(e)=>this.formItems[i].IDCard=e.target.value} placeholder="请输入队员的身份证号" className="input-text"/>
+                            <input type="text" value={formItems[i].IDCard} onChange={(e)=> this.handleChangeValue(i, 'IDCard', e.target.value)} placeholder="请输入队员的身份证号" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                         <div className="col">
                             <span>所在年级：</span>
-                            <input type="text" onChange={(e)=>this.formItems[i].grade=e.target.value} placeholder="请输入队员的所在年级" className="input-text"/>
+                            <input type="text" value={formItems[i].grade} onChange={(e)=> this.handleChangeValue(i, 'grade', e.target.value)} placeholder="请输入队员的所在年级" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col">
                             <span>在校学号：</span>
-                            <input type="text" onChange={(e)=>this.formItems[i].code=e.target.value} placeholder="请输入队员的在校学号" className="input-text"/>
+                            <input type="text" value={formItems[i].code} onChange={(e)=> this.handleChangeValue(i, 'code', e.target.value)} placeholder="请输入队员的在校学号" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                         <div className="col">
                             <span>手机号码：</span>
-                            <input type="text" onChange={(e)=>this.formItems[i].phone=e.target.value} placeholder="请输入队员的手机号码" className="input-text"/>
+                            <input type="text" value={formItems[i].phone} onChange={(e)=> this.handleChangeValue(i, 'phone', e.target.value)} placeholder="请输入队员的手机号码" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col">
                             <span>学院全称：</span>
-                            <input type="text" onChange={(e)=>this.formItems[i].college=e.target.value} placeholder="请输入队员所在学校的全称" className="input-text"/>
+                            <input type="text" value={formItems[i].college} onChange={(e)=> this.handleChangeValue(i, 'college', e.target.value)} placeholder="请输入队员所在学校的全称" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                         <div className="col">
                             <span>邮箱地址：</span>
-                            <input type="text" onChange={(e)=>this.formItems[i].email=e.target.value} placeholder="请输入队员的邮箱地址" className="input-text"/>
+                            <input type="text" value={formItems[i].email} onChange={(e)=> this.handleChangeValue(i, 'email', e.target.value)} placeholder="请输入队员的邮箱地址" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                     </div>
@@ -211,10 +227,10 @@ class Signup extends Component {
                 <div className="content">
                     <div className="row" style={{paddingLeft: '10px', marginTop: '10px'}}>
                         <span>参赛组别：</span>
-                        <select onChange={(e)=>this.formHead.category = e.target.value}>
+                        <select value={this.state.form.category} onChange={(e)=>this.setState({form: {...this.state.form, category:e.target.value}})}>
                             <option value={100}>医学本科组</option>
                             <option value={200}>医学专科组</option>
-                            <option value={300}>非医学专业组</option>
+                            <option value={300}>非医学本科组</option>
                             <option value={400}>非医学专科组</option>
                         </select>
                         <i className="icon-required"></i>
@@ -222,12 +238,12 @@ class Signup extends Component {
                     <div className="row" style={{paddingLeft: '10px'}}>
                         <div className="col">
                             <span>指导老师：</span>
-                            <input type="text" onChange={(e)=>this.formHead.teacher=e.target.value} placeholder="请输入指导老师的姓名" className="input-text"/>
+                            <input type="text" value={this.state.form.teacher} onChange={(e)=>this.setState({form: {...this.state.form, teacher:e.target.value}})} placeholder="请输入指导老师的姓名" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                         <div className="col">
                             <span>联系方式：</span>
-                            <input type="text" onChange={(e)=>this.formHead.t_phone=e.target.value} placeholder="请输入指导老师的手机号码" className="input-text"/>
+                            <input type="text" value={this.state.form.t_phone} onChange={(e)=>this.setState({form: {...this.state.form, t_phone:e.target.value}})} placeholder="请输入指导老师的手机号码" className="input-text"/>
                             <i className="icon-required"></i>
                         </div>
                     </div>
@@ -258,7 +274,10 @@ class Signup extends Component {
                 <Popup ref="add" title="温馨提示" hideFooter={true} width="550px" height="120px">
                     <p style={{color: '#666',marginLeft: '15px',fontSize:'12px'}}>注意！一个队伍人数不能超过3人</p>
                 </Popup>
-                <Popup ref="submit" title="提交确认" onConfirm={()=>this.handleSubmit()} width="750px" height="650px">
+                <Popup ref="validate" title="温馨提示" hideFooter={true} width="550px" height="120px">
+                    <p style={{color: '#666',marginLeft: '15px',fontSize:'12px'}}>请填写完整后再提交！</p>
+                </Popup>
+                <Popup ref="submit" title="提交确认" onConfirm={()=>this.handleSubmit()} width="750px">
                     <div className="confirm">
                         <div className="basic">
                             <span>学校名称：{form.school}</span>
@@ -290,6 +309,7 @@ class Signup extends Component {
                             }
                         })}
                         <hr/>
+                        <p style={{fontSize: '14px', position: 'relative', top: '10px',color: '#f00'}}>注意：请校对仔细后再提交，报名成功后信息不得修改。如果发现有误请删除后重新报名！</p>
                     </div>
                 </Popup>
                 <Popup ref="tips" title="温馨提示" hideFooter={true} width="550px" height="120px">

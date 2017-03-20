@@ -25,7 +25,7 @@ class Home extends Component {
 
     constructor(props) {
         super(props)
-        this.pageSize = 10;
+        this.pageSize = 5;
         this.userForm = {
             id: props.user.get('u_id'),
             name: props.user.get('u_name'),
@@ -35,20 +35,27 @@ class Home extends Component {
             email: props.user.get('u_email')
         }
         this.state = {
-            dataSource: props.members.get('preload')?props.members.get('items').slice(0, this.pageSize):[],
+            dataSource: props.preload?props.members.items.slice(0, this.pageSize):[],
             memberForm: {},
         }
         this.memberForm = {}
+        this.props.actions.postUserInfo({body: {id: getCookie({name: 'MATH_USER_INFO'})}})
     }
 
     componentDidMount() {
-        this.props.actions.getMembers({body:{id:getCookie({name: 'MATH_USER_INFO'})}})
+        const id = getCookie({name: 'MATH_USER_INFO'})
+        this.props.actions.getMembers({
+            body:{id: id},
+            success: () => {
+                if (!this.props.user.get('u_linker')) this.refs.login.show()
+            }
+        })
     }
 
     componentWillReceiveProps(nextProps, nextState) {
-        if (nextProps.members.get('preload')) {
+        if (nextProps.members.preload) {
             this.setState({
-                dataSource: nextProps.members.get('items').slice(0, this.pageSize)
+                dataSource: nextProps.members.items.slice(0, this.pageSize)
             })
         }
     }
@@ -57,26 +64,26 @@ class Home extends Component {
         this.page = page;
         let _start = (this.page-1)*this.pageSize, _end = this.page*this.pageSize;
         this.setState({
-            dataSource: this.props.members.get('items').slice(_start, _end)
+            dataSource: this.props.members.items.slice(_start, _end)
         })
     }
 
     handleShowEditModel(member) {
         this.refs.popup.show()
         this.memberForm = {
-            id: member.get('m_id'),
-            name: member.get('m_name'),
-            IDCard: member.get('m_IDCard'),
-            code: member.get('m_code'),
-            college: member.get('m_college'),
-            major: member.get('m_major'),
-            grade: member.get('m_grade'),
-            phone: member.get('m_phone'),
-            email: member.get('m_email'),
-            isLeader: member.get('m_leader'),
-            teacher: member.get('t_teacher'),
-            t_phone: member.get('t_teacher_phone'),
-            category: member.get('t_type'),
+            id: member.m_id,
+            name: member.m_name,
+            IDCard: member.m_IDCard,
+            code: member.m_code,
+            college: member.m_college,
+            major: member.m_major,
+            grade: member.m_grade,
+            phone: member.m_phone,
+            email: member.m_email,
+            isLeader: member.m_leader,
+            teacher: member.t_teacher,
+            t_phone: member.t_teacher_phone,
+            category: member.t_type,
         }
         this.setState({
             memberForm: this.memberForm,
@@ -113,44 +120,36 @@ class Home extends Component {
     handleShowDelModel(member) {
         this.refs.delete.show()
         this.memberForm = {
-            id: member.get('m_id'),
-            isLoader: member.get('m_leader'),
+            id: member.t_id,
         }
     }
 
     handleDeleteItem() {
         this.refs.loading.show()
-        if (this.memberForm.isLoader) {
-            this.refs.delete.close()
-            this.refs.delete_tip.show()
-            this.refs.loading.close()
-        } else {
-            this.props.actions.deleteMember({
-                body: this.memberForm,
-                success: () => {
-                    this.refs.pagenation.pageInit()
-                    this.props.actions.getMembers({
-                        body: {id:getCookie({name: 'MATH_USER_INFO'})},
-                        success: () => {
-                            setTimeout(()=>{
-                                this.refs.loading.close()
-                                this.refs.tips.show()
-                                this.refs.delete.close()
-                            },500)
-                        },
-                        error: (message) => {
-                            alert(message)
+        this.props.actions.deleteMember({
+            body: this.memberForm,
+            success: () => {
+                this.refs.pagenation.pageInit()
+                this.props.actions.getMembers({
+                    body: {id:getCookie({name: 'MATH_USER_INFO'})},
+                    success: () => {
+                        setTimeout(()=>{
+                            this.refs.loading.close()
+                            this.refs.tips.show()
                             this.refs.delete.close()
-                        }
-                    })
-
-                },
-                error: (message) => {
-                    alert(message)
-                    this.refs.delete.close()
-                }
-            })
-        }
+                        },500)
+                    },
+                    error: (message) => {
+                        alert(message)
+                        this.refs.delete.close()
+                    }
+                })
+            },
+            error: (message) => {
+                alert(message)
+                this.refs.delete.close()
+            }
+        })
     }
 
     toSignup() {
@@ -159,23 +158,29 @@ class Home extends Component {
 
     handleExport() {
         let source = [];
+        let _data = [];
+        this.props.members.items.forEach((item) => {
+          item.forEach((_item) => {
+            _data.push(_item)
+          })
+        })
         this.refs.loading.show()
-        this.props.members.get('items').map((member)=>{
+        _data.map((member)=>{
             source.push({
-                "组号": member.get('m_id'),
-                "姓名": member.get('m_name'),
-                "身份证号码": member.get('m_IDCard'),
-                "学号": member.get('m_code'),
-                "学院名称": member.get('m_college'),
-                "专业": member.get('m_major'),
-                "年级": member.get('m_grade'),
-                "联系方式": member.get('m_phone'),
-                "邮箱": member.get('m_email'),
-                "队长": member.get('m_leader') ? '队长': '',
-                "指导老师": member.get('t_teacher'),
-                "指导老师电话": member.get('t_teacher_phone'),
-                "参数组别": mapTypetoCategory(member.get('t_type')),
-                "报名日期": member.get('t_time').substring(0,10)
+                "组号": member.m_id,
+                "姓名": member.m_name,
+                "身份证号码": member.m_IDCard,
+                "学号": member.m_code,
+                "学院名称": member.m_college,
+                "专业": member.m_major,
+                "年级": member.m_grade,
+                "联系方式": member.m_phone,
+                "邮箱": member.m_email,
+                "队长": member.m_leader ? '队长': '',
+                "指导老师": member.t_teacher,
+                "指导老师电话": member.t_teacher_phone,
+                "参数组别": mapTypetoCategory(member.t_type),
+                "报名日期": member.t_time.substring(0,10)
             })
         })
         this.props.actions.exportExcel({
@@ -198,6 +203,7 @@ class Home extends Component {
 
     handleChangeUserInfo() {
         this.refs.loading.show()
+        console.log(this.userForm)
         this.props.actions.setUserInfo({
             body: this.userForm,
             success: () => {
@@ -230,7 +236,7 @@ class Home extends Component {
                     <span style={{color: '#4990E2', textDecoration: 'underline'}}>{user.get('u_phone')}</span>
                     <span style={{color: '#F6A623', textDecoration: 'underline'}}>{user.get('u_email')}</span>
                 </p>
-                <Popup ref="change" title="修改信息" width="650px" height="420px" onConfirm={()=>this.handleChangeUserInfo()}>
+                <Popup ref="change" title="基本信息" width="650px" height="420px" onConfirm={()=>this.handleChangeUserInfo()}>
                     <div className="change-password">
                         <div className="col">
                             <span>学校名称：</span>
@@ -265,6 +271,8 @@ class Home extends Component {
                 <table>
                     <thead>
                         <th>组号</th>
+                        <th>老师</th>
+                        <th>参赛组别</th>
                         <th>姓名</th>
                         <th>身份证号码</th>
                         <th>学号</th>
@@ -273,35 +281,61 @@ class Home extends Component {
                         <th>年级</th>
                         <th>联系方式</th>
                         <th>邮箱地址</th>
-                        <th>老师</th>
-                        <th>参赛组别</th>
-                        <th>报名日期</th>
                         <th>操作</th>
                     </thead>
                     <tbody>
-                        {members.map((item)=>(
-                            <tr>
-                                <td>{item.get('t_id')}</td>
-                                <td>{item.get('m_leader')?(<svg className="icon" style={{width: '1em', height: '1em','verticalAlign': 'middle',fill: 'currentColor',overflow: 'hidden',color:'#f6a623'}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6485"><path d="M180.705882 59.958065C180.705882 26.84414 205.073557 11.076216 236.058133 25.160114L787.941864 276.016356C818.512071 289.911904 818.926441 312.252686 787.941864 326.336585L236.058133 577.192827C205.487929 591.088374 180.705882 574.905862 180.705882 542.394876L180.705882 59.958065ZM180.705882 60.235294l60.235294 0 0 963.764706-60.235294 0 0-963.764706Z" p-id="6486"></path></svg>):''} {item.get('m_name')}</td>
-                                <td>{item.get('m_IDCard')}</td>
-                                <td>{item.get('m_code')}</td>
-                                <td>{item.get('m_college')}</td>
-                                <td>{item.get('m_major')}</td>
-                                <td>{item.get('m_grade')}</td>
-                                <td>{item.get('m_phone')}</td>
-                                <td>{item.get('m_email')}</td>
-                                <td>{item.get('t_teacher')}</td>
-                                <td>{mapTypetoCategory(item.get('t_type'))}</td>
-                                <td>{item.get('t_time').substring(0,10)}</td>
-                                <td>
-                                    <a href="javascript:;" title="编辑" onClick={()=>this.handleShowEditModel(item)} className="btn-edit">
-                                        <svg className="icon" style={{width: '1em', height: '1em', verticalAlign: 'middle',fill: 'currentColor',overflow: 'hidden'}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3691"><path d="M1024 300.748891l-602.406389 602.406389-300.748891-300.748891 602.406389-602.406389zM0 723.251109l300.748891 300.748891-300.748891 0 0-300.748891z" p-id="3692"></path></svg>
-                                    </a>
-                                    <a href="javascript:;" title="删除" onClick={()=>this.handleShowDelModel(item)} className="btn-del">
-                                        <svg class="icon" style={{width: '1em', height: '1em',verticalAlign: 'middle',fill: 'currentColor',overflow: 'hidden'}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4853"><path d="M640.512 256 640.512 128 382.464 128 382.464 256 192 256 192 320 832 320 832 256ZM256 896l512 0L768 384 256 384 256 896zM576 512l64 0 0 256-64 0L576 512zM384 512l64 0 0 256-64 0L384 512z" p-id="4854"></path></svg>
-                                    </a></td>
-                            </tr>
-                        ))}
+                        {members.map((item)=> {
+                            return item.map((_item, j) => {
+                                if (j === 0) {
+                                    return (
+                                    <tr>
+                                      <td rowSpan={item.length}>{_item.t_id}</td>
+                                      <td rowSpan={item.length}>{_item.t_teacher}</td>
+                                      <td rowSpan={item.length}>{mapTypetoCategory(_item.t_type)}</td>
+                                      {/* <td rowSpan={item.length}>{_item.t_time.substring(0,10)}</td> */}
+                                      <td>{_item.m_leader?(<svg className="icon" style={{width: '1em', height: '1em','verticalAlign': 'middle',fill: 'currentColor',overflow: 'hidden',color:'#f6a623'}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6485"><path d="M180.705882 59.958065C180.705882 26.84414 205.073557 11.076216 236.058133 25.160114L787.941864 276.016356C818.512071 289.911904 818.926441 312.252686 787.941864 326.336585L236.058133 577.192827C205.487929 591.088374 180.705882 574.905862 180.705882 542.394876L180.705882 59.958065ZM180.705882 60.235294l60.235294 0 0 963.764706-60.235294 0 0-963.764706Z" p-id="6486"></path></svg>):''} {item[0].m_name}</td>
+                                      <td>{_item.m_IDCard}</td>
+                                      <td>{_item.m_code}</td>
+                                      <td>{_item.m_college}</td>
+                                      <td>{_item.m_major}</td>
+                                      <td>{_item.m_grade}</td>
+                                      <td>{_item.m_phone}</td>
+                                      <td>{_item.m_email}</td>
+                                      <td rowSpan={item.length} >
+                                          {/* <a href="javascript:;" title="编辑" onClick={()=>this.handleShowEditModel(_item)} className="btn-edit">
+                                              <svg className="icon" style={{width: '1em', height: '1em', verticalAlign: 'middle',fill: 'currentColor',overflow: 'hidden'}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3691"><path d="M1024 300.748891l-602.406389 602.406389-300.748891-300.748891 602.406389-602.406389zM0 723.251109l300.748891 300.748891-300.748891 0 0-300.748891z" p-id="3692"></path></svg>
+                                          </a> */}
+                                          <a href="javascript:;" title="删除" onClick={()=>this.handleShowDelModel(_item)} className="btn-del">
+                                              <svg class="icon" style={{width: '1em', height: '1em',verticalAlign: 'middle',fill: 'currentColor',overflow: 'hidden'}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4853"><path d="M640.512 256 640.512 128 382.464 128 382.464 256 192 256 192 320 832 320 832 256ZM256 896l512 0L768 384 256 384 256 896zM576 512l64 0 0 256-64 0L576 512zM384 512l64 0 0 256-64 0L384 512z" p-id="4854"></path></svg>
+                                          </a>
+                                      </td>
+                                    </tr>
+                                  )
+                                } else {
+                                    return (
+                                    <tr>
+                                      <td>{_item.m_leader?(<svg className="icon" style={{width: '1em', height: '1em','verticalAlign': 'middle',fill: 'currentColor',overflow: 'hidden',color:'#f6a623'}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6485"><path d="M180.705882 59.958065C180.705882 26.84414 205.073557 11.076216 236.058133 25.160114L787.941864 276.016356C818.512071 289.911904 818.926441 312.252686 787.941864 326.336585L236.058133 577.192827C205.487929 591.088374 180.705882 574.905862 180.705882 542.394876L180.705882 59.958065ZM180.705882 60.235294l60.235294 0 0 963.764706-60.235294 0 0-963.764706Z" p-id="6486"></path></svg>):''} {item[0].m_name}</td>
+                                      <td>{_item.m_IDCard}</td>
+                                      <td>{_item.m_code}</td>
+                                      <td>{_item.m_college}</td>
+                                      <td>{_item.m_major}</td>
+                                      <td>{_item.m_grade}</td>
+                                      <td>{_item.m_phone}</td>
+                                      <td>{_item.m_email}</td>
+                                      {/* <td>
+                                          <a href="javascript:;" title="编辑" onClick={()=>this.handleShowEditModel(_item)} className="btn-edit">
+                                              <svg className="icon" style={{width: '1em', height: '1em', verticalAlign: 'middle',fill: 'currentColor',overflow: 'hidden'}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3691"><path d="M1024 300.748891l-602.406389 602.406389-300.748891-300.748891 602.406389-602.406389zM0 723.251109l300.748891 300.748891-300.748891 0 0-300.748891z" p-id="3692"></path></svg>
+                                          </a>
+                                          <a href="javascript:;" title="删除" onClick={()=>this.handleShowDelModel(_item)} className="btn-del">
+                                              <svg class="icon" style={{width: '1em', height: '1em',verticalAlign: 'middle',fill: 'currentColor',overflow: 'hidden'}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4853"><path d="M640.512 256 640.512 128 382.464 128 382.464 256 192 256 192 320 832 320 832 256ZM256 896l512 0L768 384 256 384 256 896zM576 512l64 0 0 256-64 0L576 512zM384 512l64 0 0 256-64 0L384 512z" p-id="4854"></path></svg>
+                                          </a>
+                                      </td> */}
+                                    </tr>
+                                  )
+                                }
+                            })
+                          })
+                        }
                     </tbody>
                 </table>
             </div>
@@ -309,7 +343,7 @@ class Home extends Component {
     }
 
     render() {
-        let error = pureRender(this.props.members);
+        let error = this.props.members.preload;
         if (!error) return (<Loading />)
         let { user } = this.props;
         let { memberForm } = this.state;
@@ -324,12 +358,12 @@ class Home extends Component {
                     {this._renderDataList(this.state.dataSource)}
                     <div style={{height: '62px'}}>
                         <span onClick={()=>this.refs.export.show()} className="btn-export">导出报名数据</span>
-                        <Pagination ref="pagenation" totalPage={Math.ceil(this.props.members.get('items').size/this.pageSize)} wrapStyle={{marginRight:'10px',marginBottom:'10px',marginTop: '-10px'}} selectPage={(page)=>this.handleChangePage(page)} pageSpace={3}/>
+                        <Pagination ref="pagenation" totalPage={Math.ceil(this.props.members.items.length/this.pageSize)} wrapStyle={{marginRight:'10px',marginBottom:'10px',marginTop: '-10px'}} selectPage={(page)=>this.handleChangePage(page)} pageSpace={3}/>
                     </div>
                 </div>
-                <Popup ref="popup" onConfirm={()=>this.handleEditItem()} title="编辑信息" width="760px" height="490px">
+                <Popup ref="popup" onConfirm={()=>this.handleEditItem()} title="修改队员信息" width="760px" height="380px">
                     <div className="edit-form">
-                        <div className="row">
+                        {/* <div className="row">
                             <div className="col">
                                 <span>参赛组别：</span>
                                 <select value={memberForm.category} onChange={(e)=>this.setState({memberForm: {...this.state.memberForm, category: e.target.value}})}>
@@ -356,7 +390,7 @@ class Home extends Component {
                                 <span>联系方式：</span>
                                 <input type="text" value={memberForm.t_phone} onChange={(e)=>this.setState({memberForm: {...this.state.memberForm, t_phone: e.target.value}})} placeholder="请输入指导老师的手机号码" className="input-text"/>
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row">
                             <div className="col">
                                 <span>真实姓名</span>
@@ -400,8 +434,8 @@ class Home extends Component {
                         <hr/>
                     </div>
                 </Popup>
-                <Popup onConfirm={()=>this.handleDeleteItem()} ref="delete" title="编辑信息" width="550px" height="180px">
-                    <p style={{color: '#666',marginLeft: '15px',fontSize:'12px'}}>确定要删除该成员吗？</p>
+                <Popup onConfirm={()=>this.handleDeleteItem()} ref="delete" title="温馨提示" width="550px" height="180px">
+                    <p style={{color: '#666',marginLeft: '15px',fontSize:'12px'}}>确定要删除该队伍吗？</p>
                 </Popup>
                 <Popup ref="delete_tip" title="温馨提示" hideFooter={true} width="550px" height="120px">
                     <p style={{color: '#666',marginLeft: '15px',fontSize:'12px'}}>注意！不能删除队长，如需删除请先将其设为普通队员</p>
@@ -417,6 +451,11 @@ class Home extends Component {
                     恭喜！导出成功
                     <a style={{float: 'right', marginRight: '20px'}} href='/data.xlsx'>手动下载</a>
                     </p>
+                </Popup>
+                <Popup ref="login" title="完善您的账号信息" onConfirm={()=>{this.refs.login.close();this.refs.change.show()}} width="635px" height='200px'>
+                    <div className="content-box">
+                        <p style={{fontSize: '13px',color: '#888',padding: '10px 20px'}}>欢迎登录中国大学生医药数学建模报名系统，请点击确定完善您的账号信息！</p>
+                    </div>
                 </Popup>
                 <Loading show={true} ref="loading" />
             </div>
