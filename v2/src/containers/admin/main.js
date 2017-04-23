@@ -11,7 +11,7 @@ import './style.less'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { replace, push } from 'react-router-redux'
-import { logout, check, postUserInfo, changePassword, testPassword } from '../../redux/actions/user.action'
+import { logout, check, postUserInfo, getUsers, changePassword, testPassword } from '../../redux/actions/user.action'
 
 import pureRender from '../../mixins/pure-render.mix'
 import Loading from '../../components/loading'
@@ -35,6 +35,7 @@ class Main extends Component {
         this.props.actions.check({
             success: (id) => {
                 this.props.actions.postUserInfo({body: {id: id}})
+                this.props.actions.getUsers({})
             },
             fail: () => {
                 this.props.actions.replace('/')
@@ -193,14 +194,14 @@ class Main extends Component {
 
 function mapStateToProps(state) {
     return {
-        user: state.user
+        user: state.user,
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators({
-            replace, logout, check, postUserInfo, changePassword, testPassword
+            replace, logout, check, postUserInfo, getUsers, changePassword, testPassword
         }, dispatch)
     }
 }

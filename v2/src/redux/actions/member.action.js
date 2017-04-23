@@ -12,7 +12,7 @@ export function getAllMembers(opt) {
     return (dispatch) => {
         const route = '/api/members';
         const success = (data) => {
-            dispatch({ type: TYPES.MEMBERS_LIST, result: {items: data} })
+            dispatch({ type: TYPES.MEMBERS_LIST, result: {items: process(data).sort((a, b) => a[0].u_id - b[0].u_id)} })
             opt.success && opt.success(data)
         };
         request(route, {}, dispatch, success, opt.error)
