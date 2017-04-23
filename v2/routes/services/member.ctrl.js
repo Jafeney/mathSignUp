@@ -24,7 +24,7 @@ module.exports = {
         var props = {};
         var member = new Member({props: props});
         member.getAllItems(function(err, data) {
-            if (data.length) {
+            if (!data.err) {
                 return res.send({
                     code: 200,
                     data: data,

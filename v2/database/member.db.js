@@ -17,7 +17,7 @@ var Member = function(member) {
 
 /*获取全部数据,正式上线时请关闭*/
 Member.prototype.getAllItems = function(callback) {
-    var _sql = `select * from member, team where member.t_id=team.t_id and m_del=0`;
+    var _sql = `select * from member, team, user where member.t_id=team.t_id and team.u_id=user.u_id and member.m_del=0 and user.u_role=100`;
     helper.db_query({
         connect: con,
         sql: _sql,
